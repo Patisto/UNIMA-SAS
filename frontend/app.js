@@ -1,7 +1,8 @@
 // ─────────────────────────────────────────────────────
 // CONFIG
 // ─────────────────────────────────────────────────────
-const API_BASE = (window && window.__ENV && window.__ENV.API_BASE) ? window.__ENV.API_BASE : 'http://localhost:3000/api';
+// Hardcoded API base (served from Render)
+const API_BASE = 'https://unima-sas.onrender.com/api';
 const ADMIN_KEY = 'sas-admin-2025'; // keep this private; only share with admins
 
 const POSITIONS = [
