@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UNIMA SAS — See Nominations</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="UNIMA SAS" class="site-logo" />
+  <div class="church-tag">Society of Anglican Students</div>
+  <h1>✝ UNIMA SAS Awards 2026</h1>
+  <p class="subtitle">See what others are nominating</p>
+  <div class="cross-divider">✦</div>
+</header>
+
+<nav class="nav-tabs">
+  <a href="index.html"> Nominate</a>
+  <a href="results.html" class="active"> See Nominations</a>
+</nav>
+
+<div class="counter-banner">
+  <span class="count-icon">🗳️</span>
+  <span class="count-number" id="submissionCount">—</span>
+  <div class="count-label">Total<br>Submissions</div>
+</div>
+
+<div class="container">
+  <div class="results-intro">
+    Tap any position below to see the names people are suggesting. Use this to help you decide who to nominate.
+  </div>
+
+  <button class="refresh-btn" onclick="loadResults()">🔄 Refresh</button>
+
+  <div id="resultsContainer">
+    <p style="text-align:center; color: var(--text-muted); font-size:13px;">Loading nominations...</p>
+  </div>
+</div>
+
+<script src="env.js"></script>
+<script src="app.js"></script>
+<script>
+  fetchCount();
+  loadResults();
+</script>
+</body>
+</html>

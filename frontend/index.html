@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UNIMA SAS Nominations 2026</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="UNIMA SAS" class="site-logo" />
+  <div class="church-tag">Society of Anglican Students</div>
+  <h1>✝ UNIMA SAS Awards 2026</h1>
+  <p class="subtitle">Annual Nominations — Fill in your suggested names below</p>
+  <div class="cross-divider">✦</div>
+</header>
+
+<nav class="nav-tabs">
+  <a href="index.html" class="active"> Nominate</a>
+  <a href="results.html"> See Nominations</a>
+</nav>
+
+<!-- Submission Counter -->
+<div class="counter-banner">
+  <span class="count-icon">🗳️</span>
+  <span class="count-number" id="submissionCount">—</span>
+  <div class="count-label">Total<br>Submissions</div>
+</div>
+
+<div class="container">
+  <p class="section-title">✦ Nomination Form</p>
+
+  <div id="positionsForm"></div>
+
+  <div class="submit-wrap">
+    <button class="btn-submit" id="submitBtn" onclick="submitNominations()">
+      ✝ Submit My Nominations
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="env.js"></script>
+<script src="app.js"></script>
+<script>
+  initNominationForm();
+  fetchCount();
+</script>
+</body>
+</html>
