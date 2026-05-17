@@ -10,7 +10,6 @@ const POSITIONS = [
   { key: 'most_dedicated',    label: 'Most Dedicated',         emoji: '⭐' },
   { key: 'golden_voice',      label: 'Golden Voice',           emoji: '🎤' },
   { key: 'well_dressed',      label: 'Well Dressed',           emoji: '👔' },
-  { key: 'gentleman_of_year', label: 'Gentleman of the Year',  emoji: '🏆' },
   { key: 'sociable_person',   label: 'Sociable Person',        emoji: '🤝' },
 ];
 
