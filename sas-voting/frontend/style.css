@@ -84,6 +84,15 @@ header .subtitle {
   font-weight: 300;
 }
 
+.verse {
+  font-size: 13px;
+  color: rgba(255,255,255,0.9);
+  font-style: italic;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+  opacity: 0.95;
+}
+
 header .cross-divider {
   margin: 16px auto 0;
   display: flex;
