@@ -21,15 +21,37 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-app.get('/api/voting/status', async (req, res) => {
+async function getVotingStatus() {
   const { data, error } = await supabase
     .from('voting_status')
-    .select('is_open')
+    .select('is_open, results_released')
     .eq('id', 1)
     .single();
 
-  if (error) return res.status(500).json({ error: 'Failed to get status.' });
-  res.json({ is_open: data.is_open });
+  if (error) throw error;
+  return data;
+}
+
+function buildTally(votes = []) {
+  const tally = {};
+
+  votes.forEach(v => {
+    const slotKey = `${v.position_key}__${v.gender}`;
+    if (!tally[slotKey]) tally[slotKey] = {};
+    const name = v.candidates?.name || `ID ${v.candidate_id}`;
+    tally[slotKey][name] = (tally[slotKey][name] || 0) + 1;
+  });
+
+  return tally;
+}
+
+app.get('/api/voting/status', async (req, res) => {
+  try {
+    const status = await getVotingStatus();
+    res.json({ is_open: status.is_open, results_released: status.results_released });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to get status.' });
+  }
 });
 
 app.get('/api/candidates', async (req, res) => {
@@ -53,7 +75,7 @@ app.post('/api/vote', async (req, res) => {
 
   const { data: status } = await supabase
     .from('voting_status')
-    .select('is_open')
+    .select('is_open, results_released')
     .eq('id', 1)
     .single();
 
@@ -97,7 +119,7 @@ app.get('/api/admin/results', requireAdmin, async (req, res) => {
 
   const { data: status } = await supabase
     .from('voting_status')
-    .select('is_open')
+    .select('is_open, results_released')
     .eq('id', 1)
     .single();
 
@@ -107,31 +129,83 @@ app.get('/api/admin/results', requireAdmin, async (req, res) => {
 
   if (vErr) return res.status(500).json({ error: 'Failed to fetch results.' });
 
-  const tally = {};
-  votes.forEach(v => {
-    const slotKey = `${v.position_key}__${v.gender}`;
-    if (!tally[slotKey]) tally[slotKey] = {};
-    const name = v.candidates?.name || `ID ${v.candidate_id}`;
-    tally[slotKey][name] = (tally[slotKey][name] || 0) + 1;
-  });
+  const tally = buildTally(votes);
 
   res.json({
     is_open: status?.is_open,
+    results_released: status?.results_released,
     total_voters: totalVoters,
     tally,
   });
 });
 
+app.get('/api/results', async (req, res) => {
+  try {
+    const status = await getVotingStatus();
+
+    if (!status.results_released) {
+      return res.json({
+        is_open: status.is_open,
+        results_released: false,
+        tally: {},
+      });
+    }
+
+    const { data: votes, error: vErr } = await supabase
+      .from('votes')
+      .select('position_key, gender, candidate_id, candidates(name, photo_url)');
+
+    if (vErr) return res.status(500).json({ error: 'Failed to fetch results.' });
+
+    res.json({
+      is_open: status.is_open,
+      results_released: true,
+      tally: buildTally(votes || []),
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch results.' });
+  }
+});
+
 app.post('/api/admin/voting/toggle', requireAdmin, async (req, res) => {
   const { is_open } = req.body;
 
+  const updatePayload = { is_open, updated_at: new Date().toISOString() };
+  if (is_open) {
+    updatePayload.results_released = false;
+  }
+
   const { error } = await supabase
     .from('voting_status')
-    .update({ is_open, updated_at: new Date().toISOString() })
+    .update(updatePayload)
     .eq('id', 1);
 
   if (error) return res.status(500).json({ error: 'Failed to update status.' });
-  res.json({ is_open });
+  res.json(updatePayload);
+});
+
+app.post('/api/admin/results/release', requireAdmin, async (req, res) => {
+  const { results_released } = req.body;
+
+  const { data: status, error: statusErr } = await supabase
+    .from('voting_status')
+    .select('is_open')
+    .eq('id', 1)
+    .single();
+
+  if (statusErr) return res.status(500).json({ error: 'Failed to update release status.' });
+
+  if (status?.is_open) {
+    return res.status(400).json({ error: 'Close voting before releasing results.' });
+  }
+
+  const { error } = await supabase
+    .from('voting_status')
+    .update({ results_released, updated_at: new Date().toISOString() })
+    .eq('id', 1);
+
+  if (error) return res.status(500).json({ error: 'Failed to update release status.' });
+  res.json({ results_released });
 });
 
 app.post('/api/admin/candidates', requireAdmin, async (req, res) => {
@@ -185,11 +259,11 @@ app.get('/api/admin/export', requireAdmin, async (req, res) => {
 
   const { data: status } = await supabase
     .from('voting_status')
-    .select('is_open')
+    .select('is_open, results_released')
     .eq('id', 1)
     .single();
 
-  res.json({ is_open: status?.is_open, votes });
+  res.json({ is_open: status?.is_open, results_released: status?.results_released, votes });
 });
 
 app.listen(PORT, () => {

@@ -26,8 +26,9 @@ CREATE UNIQUE INDEX one_vote_per_slot
 CREATE TABLE voting_status (
   id INT PRIMARY KEY DEFAULT 1,
   is_open BOOLEAN DEFAULT TRUE,
+  results_released BOOLEAN DEFAULT FALSE,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Insert the default open status
-INSERT INTO voting_status (id, is_open) VALUES (1, TRUE);
+INSERT INTO voting_status (id, is_open, results_released) VALUES (1, TRUE, FALSE);

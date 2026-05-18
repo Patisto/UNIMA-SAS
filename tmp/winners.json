@@ -1,0 +1,57 @@
+{
+  "golden_voice": {
+    "female": {
+      "candidate_id": 57,
+      "name": "Bertha Dzuwa",
+      "votes": 1
+    },
+    "male": {
+      "candidate_id": 55,
+      "name": "Mwai Manja",
+      "votes": 1
+    }
+  },
+  "most_dedicated": {
+    "female": {
+      "candidate_id": 54,
+      "name": "Angella Chatha",
+      "votes": 1
+    },
+    "male": {
+      "candidate_id": 48,
+      "name": "Gracious Chimata",
+      "votes": 1
+    }
+  },
+  "most_prayerful": {
+    "female": {
+      "candidate_id": 44,
+      "name": "Dorothy Kaulimbo",
+      "votes": 1
+    },
+    "male": {
+      "candidate_id": 43,
+      "name": "Aubrey Chafuwa",
+      "votes": 1
+    }
+  },
+  "sociable_person": {
+    "male": {
+      "candidate_id": 67,
+      "name": "Gracious Chimata",
+      "votes": 1
+    }
+  },
+  "well_dressed": {
+    "female": {
+      "candidate_id": 64,
+      "name": "Lindiwe Makala",
+      "votes": 1
+    },
+    "male": {
+      "candidate_id": 61,
+      "name": "Michael Masudi",
+      "votes": 1
+    }
+  }
+}

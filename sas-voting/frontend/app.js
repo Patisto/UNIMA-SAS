@@ -32,10 +32,12 @@ async function initVotingPage() {
   getVoterToken();
 
   let isOpen = false;
+  let resultsReleased = false;
   try {
     const res = await fetch(`${API_BASE}/voting/status`);
     const data = await res.json();
     isOpen = data.is_open;
+    resultsReleased = data.results_released;
   } catch (e) {
     console.error('Status check failed:', e);
   }
@@ -44,7 +46,35 @@ async function initVotingPage() {
   const statusText = document.getElementById('statusText');
   const closedBanner = document.getElementById('closedBanner');
   const votedBanner = document.getElementById('votedBanner');
+  const resultsBanner = document.getElementById('resultsReleaseBanner');
   const submitBtn = document.getElementById('submitBtn');
+  const ballotContainer = document.getElementById('ballotContainer');
+  const publicResultsView = document.getElementById('publicResultsView');
+
+  currentResultsReleased = !!resultsReleased;
+
+  if (resultsReleased) {
+    dot.classList.add('closed');
+    statusText.textContent = 'Voting is closed. Results are released.';
+    closedBanner.classList.add('show');
+    if (resultsBanner) resultsBanner.style.display = 'block';
+    if (submitBtn) submitBtn.style.display = 'none';
+    if (ballotContainer) ballotContainer.style.display = 'none';
+
+    try {
+      const res = await fetch(`${API_BASE}/results`);
+      const data = await res.json();
+      buildResults(data.tally || {}, 'publicResultsContainer');
+      if (publicResultsView) publicResultsView.style.display = 'block';
+    } catch (e) {
+      console.error('Failed to load public results:', e);
+      if (ballotContainer) {
+        ballotContainer.style.display = 'block';
+        ballotContainer.innerHTML = '<p style="color:var(--danger);font-size:13px;">Failed to load released results.</p>';
+      }
+    }
+    return;
+  }
 
   if (isOpen) {
     dot.classList.add('open');
@@ -236,6 +266,7 @@ function disableAllCards() {
 }
 
 let currentVotingState = false;
+let currentResultsReleased = false;
 
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
@@ -264,7 +295,9 @@ async function loadResults() {
     const data = await res.json();
 
     currentVotingState = data.is_open;
+    currentResultsReleased = !!data.results_released;
     updateToggleUI(data.is_open);
+    updateReleaseUI(currentResultsReleased, data.is_open);
 
     document.getElementById('adminTotalVoters').textContent = data.total_voters ?? '—';
 
@@ -274,14 +307,15 @@ async function loadResults() {
     });
     document.getElementById('adminTotalVotes').textContent = totalVotes;
 
-    buildResults(data.tally || {});
+    buildResults(data.tally || {}, 'resultsContainer');
   } catch (e) {
     console.error(e);
   }
 }
 
-function buildResults(tally) {
-  const container = document.getElementById('resultsContainer');
+function buildResults(tally, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
   container.innerHTML = '';
 
   POSITIONS.forEach(pos => {
@@ -334,9 +368,43 @@ async function toggleVoting() {
     const data = await res.json();
     currentVotingState = data.is_open;
     updateToggleUI(data.is_open);
+    if (data.results_released !== undefined) {
+      currentResultsReleased = !!data.results_released;
+      updateReleaseUI(currentResultsReleased, currentVotingState);
+    }
     showToast(`Voting ${data.is_open ? 'opened' : 'closed'}.`);
   } catch (e) {
     showToast('Failed to update voting status.');
+  }
+}
+
+async function toggleResultsRelease() {
+  if (currentVotingState) {
+    showToast('Close voting before releasing results.');
+    return;
+  }
+
+  const newState = !currentResultsReleased;
+  try {
+    const res = await fetch(`${API_BASE}/admin/results/release`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': ADMIN_KEY
+      },
+      body: JSON.stringify({ results_released: newState }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed');
+    }
+
+    currentResultsReleased = !!data.results_released;
+    updateReleaseUI(currentResultsReleased, currentVotingState);
+    showToast(currentResultsReleased ? 'Results released.' : 'Results hidden again.');
+  } catch (e) {
+    showToast(e.message || 'Failed to update release status.');
   }
 }
 
@@ -351,6 +419,29 @@ function updateToggleUI(isOpen) {
     btn.textContent = 'Open voting';
     btn.className = 'toggle-btn closed-state';
     sub.textContent = 'Voting is currently closed';
+  }
+}
+
+function updateReleaseUI(resultsReleased, isOpen) {
+  const btn = document.getElementById('releaseBtn');
+  if (!btn) return;
+
+  if (isOpen) {
+    btn.textContent = 'Locked';
+    btn.className = 'toggle-btn release-state disabled';
+    btn.disabled = true;
+    btn.title = 'Close voting before releasing results';
+    return;
+  }
+
+  btn.disabled = false;
+  btn.title = '';
+  if (resultsReleased) {
+    btn.textContent = 'Hide results';
+    btn.className = 'toggle-btn release-state open-state';
+  } else {
+    btn.textContent = 'Release results';
+    btn.className = 'toggle-btn release-state closed-state';
   }
 }
 

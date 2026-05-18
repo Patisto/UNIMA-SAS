@@ -573,6 +573,12 @@ header .cross-divider::after {
   margin-bottom: 16px;
 }
 
+.admin-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .admin-top-left {
   font-size: 14px;
   font-weight: 600;
@@ -608,6 +614,16 @@ header .cross-divider::after {
 .toggle-btn.closed-state {
   background: #dcfce7;
   color: var(--success);
+}
+
+.toggle-btn.release-state {
+  background: #fff7df;
+  color: #8a5a00;
+}
+
+.toggle-btn.release-state.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .stat-row {
