@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = 'https://unima-sas-voting.onrender.com/api';
 const ADMIN_KEY = 'sas-vote-admin-2026';
 const VOTED_KEY = 'sas_voted_2025';
 const TOKEN_KEY = 'sas_voter_token_2025';
