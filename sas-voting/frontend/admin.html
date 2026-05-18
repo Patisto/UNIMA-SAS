@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SAS Voting Admin</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<header>
+  <div class="church-tag">Society of Anglican Students</div>
+  <h1>✝ Voting Admin</h1>
+  <p class="subtitle">Manage candidates, results, and voting status.</p>
+  <div class="cross-divider">✦</div>
+</header>
+
+<nav class="nav-tabs">
+  <a href="index.html"> Vote</a>
+  <a href="admin.html" class="active"> Admin</a>
+</nav>
+
+<div class="container">
+  <div class="admin-gate" id="adminGate">
+    <h2>Access required</h2>
+    <p>Enter the admin password to continue.</p>
+    <input type="password" id="adminPass" placeholder="password"
+      onkeydown="if(event.key==='Enter') adminLogin()"/>
+    <button class="btn-admin" onclick="adminLogin()">Unlock</button>
+    <p id="loginError" style="color:var(--danger);font-size:12px;margin-top:10px;"></p>
+  </div>
+
+  <div class="admin-content" id="adminContent">
+    <div class="admin-top" id="votingToggleBar">
+      <div>
+        <div class="admin-top-left" id="toggleLabel">Voting status</div>
+        <div class="admin-top-sub" id="toggleSub">Loading...</div>
+      </div>
+      <button class="toggle-btn" id="toggleBtn" onclick="toggleVoting()">...</button>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num" id="adminTotalVoters">—</div>
+        <div class="stat-lbl">Unique voters</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="adminTotalVotes">—</div>
+        <div class="stat-lbl">Total votes cast</div>
+      </div>
+    </div>
+
+    <div class="admin-switcher">
+      <button class="admin-switch-btn active" id="resultsViewBtn" onclick="switchAdminView('results')">Live results</button>
+      <button class="admin-switch-btn" id="manageViewBtn" onclick="switchAdminView('manage')">Manage candidates</button>
+    </div>
+
+    <div id="resultsView" class="admin-view active-view">
+      <div class="admin-section-card">
+        <div class="section-label">Live results</div>
+        <div id="resultsContainer">
+          <p style="color:var(--muted);font-size:13px;">Loading...</p>
+        </div>
+      </div>
+
+      <button class="btn-download" onclick="downloadData()">Download raw data (JSON)</button>
+    </div>
+
+    <div id="manageCandidatesView" class="admin-view">
+      <div class="admin-section-card">
+        <div class="admin-section-title">Manage candidates</div>
+
+        <div class="edit-banner" id="editBanner" style="display:none;">
+          Editing candidate. Update the fields and press Save changes, or cancel to add a new candidate.
+        </div>
+
+        <div class="add-candidate-form">
+          <select id="newPosition">
+            <option value="">Select position...</option>
+            <option value="most_prayerful">Most Prayerful</option>
+            <option value="most_dedicated">Most Dedicated</option>
+            <option value="golden_voice">Golden Voice</option>
+            <option value="well_dressed">Well Dressed</option>
+            <option value="sociable_person">Sociable Person</option>
+          </select>
+          <select id="newGender">
+            <option value="">Gender...</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          <input type="text" id="newName" placeholder="Full name" class="full-width"/>
+          <input type="text" id="newPhoto" placeholder="Photo URL (optional)" class="full-width"/>
+          <div class="candidate-form-actions full-width">
+            <button class="btn-add" id="saveCandidateBtn" onclick="saveCandidate()">Add candidate</button>
+            <button class="btn-delete" id="cancelEditBtn" onclick="cancelEditCandidate()" style="display:none;">Cancel</button>
+          </div>
+        </div>
+
+        <div class="section-label">Current candidates</div>
+        <div class="candidates-list" id="candidatesList">
+          <p style="padding:14px;color:var(--muted);font-size:13px;">Loading...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

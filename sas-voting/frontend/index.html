@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UNIMA SAS Voting 2025</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="UNIMA SAS" class="site-logo" />
+  <div class="church-tag">Society of Anglican Students</div>
+  <h1>✝ SAS Voting 2025</h1>
+  <p class="subtitle">Cast one vote per category and submit your ballot below.</p>
+  <div class="cross-divider">✦</div>
+</header>
+
+<nav class="nav-tabs">
+  <a href="index.html" class="active"> Vote</a>
+  <a href="admin.html"> Admin</a>
+</nav>
+
+<div class="status-bar">
+  <div class="status-dot" id="statusDot"></div>
+  <span id="statusText">Checking voting status...</span>
+</div>
+
+<div class="container">
+  <div class="voted-banner" id="votedBanner">
+    You have already submitted your vote. Thank you for participating.
+  </div>
+  <div class="closed-banner" id="closedBanner">
+    Voting is currently closed.
+  </div>
+
+  <div id="ballotContainer">
+    <p style="color: var(--muted); font-size: 13px;">Loading candidates...</p>
+  </div>
+</div>
+
+<div class="submit-section">
+  <button class="btn-submit" id="submitBtn" onclick="submitVotes()">
+    Submit vote
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+<script>
+  initVotingPage();
+</script>
+</body>
+</html>
